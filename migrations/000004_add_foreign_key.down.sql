@@ -1,0 +1,1 @@
+ALTER TABLE newsletters DELETE COLUMN created_by;

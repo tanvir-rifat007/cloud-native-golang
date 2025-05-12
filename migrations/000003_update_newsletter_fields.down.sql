@@ -1,0 +1,1 @@
+ALTER TABLE newsletter_subscribers DELETE COLUMN is_admin;

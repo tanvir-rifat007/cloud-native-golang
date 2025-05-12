@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 15s
+  external_labels:
+    container: ${HOSTNAME}
+
+scrape_configs:
+  - job_name: app
+    basic_auth:
+      username: ${PROMETHEUS_USERNAME}
+      password: ${PROMETHEUS_PASSWORD}
+    static_configs:
+      - targets:
+          - localhost:8080
+
+remote_write:
+  - url: https://prometheus-prod-43-prod-ap-south-1.grafana.net/api/prom/push
+    basic_auth:
+      username: ${GRAFANA_USERNAME}
+      password: ${GRAFANA_API_KEY}

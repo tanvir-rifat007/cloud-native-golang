@@ -1,0 +1,79 @@
+.loading-wave {
+  background: linear-gradient(90deg, #555 0%, #999 50%, #555 100%);
+  background-size: 200% 100%;
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+  animation: loading-wave 1.5s infinite ease-in-out;
+}
+
+@keyframes loading-wave {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+#alert-modal {
+  border: none;
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 100%;
+  background: var(--background-dark);
+  color: var(--text-main);
+  font-family: var(--ff-body);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: fadeIn 0.3s ease-out;
+  position: relative;
+  text-align: center;
+}
+
+#alert-modal::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+#alert-modal h3 {
+  font-family: var(--ff-heading);
+  font-size: var(--fs-700);
+  margin-bottom: 1rem;
+  color: var(--text-accent);
+}
+
+#alert-modal p {
+  font-size: var(--fs-500);
+  margin-bottom: 2rem;
+}
+
+#alert-modal button {
+  padding: 0.75rem 1.5rem;
+  font-size: var(--fs-400);
+  font-family: var(--ff-body);
+  font-weight: 600;
+
+  background: #1447e6;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 0%;
+  right: 0%;
+}
+
+#alert-modal button:hover {
+  background: #0f3bb5;
+  transform: translateY(-2px);
+}

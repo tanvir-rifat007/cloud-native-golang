@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"
+      defer
+    ></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"
+      defer
+    ></script>
+
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/app.js" defer type="module"></script>
+    <title>Canvas App</title>
+    <base href="/" />
+  </head>
+  <body>
+    <header>
+      <nav
+        class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-4 shadow-lg border-b border-gray-700"
+      >
+        <div class="container mx-auto flex justify-between items-center">
+          <!-- Logo with Icon + Text -->
+          <a href="/" class="flex items-center space-x-2">
+            <svg
+              class="w-10 h-10 md:w-[200px] md:h-[64px]"
+              viewBox="0 0 200 64"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                x="6"
+                y="6"
+                width="52"
+                height="40"
+                rx="4"
+                ry="4"
+                fill="#f4f4f4"
+                stroke="#333"
+                stroke-width="2"
+              />
+              <rect x="6" y="6" width="52" height="8" fill="#ddd" />
+              <path
+                d="M50 50C52 48 54 44 51 41L43 49C46 52 48 52 50 50Z"
+                fill="#555"
+              />
+              <path
+                d="M42 50L14 22"
+                stroke="#555"
+                stroke-width="4"
+                stroke-linecap="round"
+              />
+              <circle cx="14" cy="22" r="4" fill="#222" />
+              <text
+                x="70"
+                y="38"
+                font-family="Courier New, monospace"
+                font-size="28"
+                fill="#e5e7eb"
+                style="font-style: italic; letter-spacing: 1px"
+              >
+                Canvas
+              </text>
+            </svg>
+          </a>
+
+          <!-- Hamburger Button -->
+          <button
+            id="menu-toggle"
+            class="text-gray-300 md:hidden focus:outline-none"
+            aria-label="Toggle navigation"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+
+          <!-- Navigation Links -->
+          <ul
+            id="nav-links"
+            class="absolute top-16 left-0 w-full bg-gray-900 border-t border-gray-700 space-y-4 px-6 py-4 text-sm font-medium text-gray-300 transition-all duration-300 transform md:relative md:top-0 md:left-0 md:flex md:space-y-0 md:space-x-6 md:p-0 md:bg-transparent md:border-none md:translate-y-0 md:opacity-100 md:static md:w-auto hidden md:flex"
+          >
+            <li>
+              <a
+                href="/"
+                class="hover:text-white transition duration-200 hover:underline underline-offset-4"
+                >Home</a
+              >
+            </li>
+            <li>
+              <a
+                href="/newsletters"
+                class="hover:text-white transition duration-200 hover:underline underline-offset-4"
+                >Newsletters</a
+              >
+            </li>
+            <li>
+              <a
+                href="/newsletters/create"
+                class="hover:text-white transition duration-200 hover:underline underline-offset-4"
+                >Create</a
+              >
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <script>
+        const toggle = document.getElementById("menu-toggle");
+        const navLinks = document.getElementById("nav-links");
+
+        toggle.addEventListener("click", () => {
+          const isOpen = navLinks.classList.contains("hidden");
+
+          if (isOpen) {
+            navLinks.classList.remove("hidden");
+            navLinks.classList.add("animate-slide-down");
+            navLinks.classList.remove("animate-slide-up");
+          } else {
+            navLinks.classList.add("animate-slide-up");
+            navLinks.classList.remove("animate-slide-down");
+
+            // Wait for animation to finish before hiding
+            navLinks.addEventListener(
+              "animationend",
+              () => {
+                navLinks.classList.add("hidden");
+              },
+              { once: true }
+            );
+          }
+        });
+      </script>
+
+      <style>
+        @keyframes slideDown {
+          0% {
+            opacity: 0;
+            transform: translateY(-10%);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideUp {
+          0% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-10%);
+          }
+        }
+
+        .animate-slide-down {
+          animation: slideDown 0.3s ease-out forwards;
+        }
+
+        .animate-slide-up {
+          animation: slideUp 0.3s ease-out forwards;
+        }
+      </style>
+    </header>
+
+    <main></main>
+
+    <!-- style the dialog -->
+
+    <style>
+      #modal {
+        /* background-color: #1f2937;
+        color: #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        width: 90%;
+        max-width: 500px;
+        margin: auto; */
+
+        border: none;
+        border-radius: 1rem;
+        padding: 2rem;
+        width: 100%;
+        max-width: 100%;
+        background: var(--background-dark);
+        color: var(--text-main);
+        font-family: var(--ff-body);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        animation: fadeIn 0.3s ease-out;
+        position: relative;
+        text-align: center;
+      }
+
+      #modal::backdrop {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+      }
+
+      #modal button {
+        background-color: #3b82f6;
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-top: 1rem;
+        position: absolute;
+        top: 0rem;
+        right: 0rem;
+        transition: background-color 0.3s ease;
+      }
+      #modal button:hover {
+        background-color: #2563eb;
+      }
+    </style>
+
+    <!-- <dialog id="modal">
+      <div id="modal-content" class="p-4">
+        <h2 class="text-lg font-bold mb-2" id="modal-title"></h2>
+        <p id="modal-content" class="text-sm text-gray-700"></p>
+      </div>
+      <button onclick="app.closeModal()">X</button>
+    </dialog> -->
+
+    <dialog id="modal">
+      <div class="p-4">
+        <h2 class="text-lg font-bold mb-2" id="modal-title"></h2>
+        <p id="modal-content" class="text-sm text-gray-700"></p>
+      </div>
+
+      <button onclick="app.closeModal()">X</button>
+    </dialog>
+
+    <template id="home-page-template">
+      <section
+        class="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white"
+      >
+        <!-- remove the vertical scroll bar -->
+        <style>
+          body {
+            overflow-y: hidden;
+          }
+        </style>
+        <div
+          class="container mx-auto flex flex-col items-center justify-center flex-grow"
+        >
+          <h1 class="text-4xl md:text-6xl font-bold mb-4">Welcome to Canvas</h1>
+          <p class="text-lg md:text-xl mb-8">
+            The ultimate solution for all your problems.
+          </p>
+
+          <div class="flex items-center space-x-4">
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              class="px-4 py-2 rounded-lg border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200"
+              onclick="app.signupNewsletter(event)"
+            >
+              Sign Up
+            </button>
+          </div>
+        </div>
+      </section>
+    </template>
+
+    <template id="activated-page-template">
+      <!-- after activated  -->
+      <section
+        class="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white"
+      >
+        <div>
+          <h1 class="text-4xl md:text-6xl font-bold mb-4">Welcome to Canvas</h1>
+          <p class="text-lg md:text-xl mb-8">
+            Your email has been confirmed. You can now use the app.
+          </p>
+
+          <div class="flex items-center space-x-4">
+            <a
+              href="#"
+              class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200"
+              >Go to Dashboard</a
+            >
+          </div>
+        </div>
+      </section>
+    </template>
+
+    <template id="newsletters-page-template">
+      <!-- show all newsletters tailwind css style -->
+      <section
+        class="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white"
+        id="newsletters-container"
+      >
+        <!-- tailwind css search box with icon -->
+        <form onsubmit="app.searchNewsletters(event)">
+          <div class="flex items-center justify-center mt-8">
+            <input
+              id="search"
+              type="text"
+              placeholder="Search newsletters..."
+              class="px-4 py-2 rounded-lg border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200 mx-2"
+            >
+              Search
+            </button>
+          </div>
+        </form>
+      </section>
+    </template>
+
+    <template id="newsletter-page-template">
+      <!-- show a newsletter tailwind css style -->
+      <section
+        class="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white"
+        id="newsletter-container"
+      ></section>
+    </template>
+
+    <template id="search-newsletter-page-template">
+      <section
+        class="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white"
+        id="newsletters-container"
+      >
+        <!-- tailwind css search box with icon -->
+        <form onsubmit="app.searchNewsletters(event)">
+          <div class="flex items-center justify-center mt-8">
+            <input
+              id="search"
+              type="text"
+              placeholder="Search newsletters..."
+              class="px-4 py-2 rounded-lg border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200 mx-2"
+            >
+              Search
+            </button>
+          </div>
+        </form>
+      </section>
+    </template>
+
+    <template id="create-newsletter-page-template">
+      <section
+        class="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white"
+        id="create-newsletter-container"
+      >
+        <div
+          class="container mx-auto flex flex-col items-center justify-center flex-grow"
+        >
+          <h1 class="text-4xl md:text-6xl font-bold mb-4">Create Newsletter</h1>
+          <form
+            id="create-newsletter-form"
+            onsubmit="app.createNewsletter(event)"
+            class="w-full max-w-lg"
+          >
+            <div class="mb-4">
+              <label
+                for="title"
+                class="block text-sm font-medium text-gray-300 mb-2"
+                >Title</label
+              >
+              <input
+                type="text"
+                id="title"
+                required
+                class="px-4 py-2 rounded-lg border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                for="content"
+                class="block text-sm font-medium text-gray-300 mb-2"
+                >Content</label
+              >
+              <textarea
+                id="content"
+                required
+                rows="5"
+                class="px-4 py-2 rounded-lg border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+              ></textarea>
+            </div>
+
+            <!-- tags -->
+            <div class="mb-4">
+              <label
+                for="tag-input"
+                class="block text-sm font-medium text-gray-300 mb-2"
+                >Tags</label
+              ><br />
+              <div id="tags-container">
+                <input
+                  type="text"
+                  id="tag-input"
+                  placeholder="Type a tag and press Enter"
+                  class="px-4 py-2 rounded-lg border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                />
+                <div id="tags-list" style="margin-top: 5px"></div>
+              </div>
+              <br />
+            </div>
+
+            <!-- preview -->
+            <div class="mb-4">
+              <label
+                for="preview"
+                class="block text-sm font-medium text-gray-300 mb-2"
+                >Preview</label
+              >
+              <div
+                id="markdown-preview"
+                class="px-4 py-2 rounded-lg border border-gray-700 bg-gray-800 text-white w-full"
+              ></div>
+            </div>
+
+            <button
+              type="submit"
+              id="submit-post"
+              class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200"
+            >
+              Create Newsletter
+            </button>
+          </form>
+        </div>
+      </section>
+    </template>
+  </body>
+</html>

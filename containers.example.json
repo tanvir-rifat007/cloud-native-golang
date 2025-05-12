@@ -1,0 +1,27 @@
+{
+  "app": {
+    "image": ":canvas.app.13",
+    "environment": {
+      "ENV": "production",
+      "HOST": "",
+      "QUEUE_NAME": "YOUR QUEUE NAME",
+      "AWS_REGION": "YOUR AWS REGION",
+      "PORT": "8080",
+      "DB_USER": "YOUR AWS LIGHTSAIL DB USER",
+      "DB_PASSWORD": "YOUR AWS LIGHTSAIL DB PASSWORD",
+      "DB_HOST": "YOUR AWS LIGHTSAIL DB HOST",
+      "DB_NAME": "YOUR AWS LIGHTSAIL DB NAME",
+      "BASE_URL": "https://canvas.ds9pna0mr2jvt.eu-north-1.cs.amazonlightsail.com/",
+      "AWS_ACCESS_KEY_ID": "YOUR AWS AWS_ACCESS_KEY_ID",
+      "AWS_SECRET_ACCESS_KEY": "YOUR AWS AWS_SECRET_ACCESS_KEY",
+      "ADMIN_PASSWORD": "YOUR ADMIN PASSWORD",
+      "FROM_EMAIL": "YOUR SMTP EMAIL",
+      "FROM_EMAIL_PASSWORD": "YOUR SMTP EMAIL PASSWORD",
+      "FROM_EMAIL_SMTP": "YOUR SMTP EMAIL SMTP",
+      "SMTP_ADDR": "YOUR SMTP EMAIL SMTP_ADDR"
+    },
+    "ports": {
+      "8080": "HTTP"
+    }
+  }
+}
