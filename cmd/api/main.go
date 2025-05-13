@@ -143,16 +143,16 @@ fmt.Println(dsn)
 fmt.Println("AWS_SECRET_ACCESS_KEY:", os.Getenv("AWS_SECRET_ACCESS_KEY"))
 
 
-	awsConfig, err := config.LoadDefaultConfig(context.Background(),
-    config.WithRegion(os.Getenv("AWS_REGION")),
-    config.WithEndpointResolverWithOptions(aws.EndpointResolverWithOptionsFunc(
-        func(service, region string, options ...interface{}) (aws.Endpoint, error) {
-            resolver := createAWSEndpointResolver()
-            return resolver(service, region)
-        },
-    )),
-    config.WithLogger(createAWSLogAdapter(log)),
+awsConfig, err := config.LoadDefaultConfig(context.Background(),
+config.WithLogger(createAWSLogAdapter(log)),
+config.WithEndpointResolver(createAWSEndpointResolver()),
 )
+if err != nil {
+	log.Error("Error loading AWS config", zap.Error(err))
+	return
+
+}
+
 
 	if err != nil {
 		log.Info("Error creating AWS config", zap.Error(err))
@@ -288,53 +288,127 @@ func createAWSLogAdapter(log *zap.Logger) logging.LoggerFunc {
 
 // createAWSEndpointResolver used for local development endpoints.
 // See https://aws.github.io/aws-sdk-go-v2/docs/configuring-sdk/endpoints/
-func createAWSEndpointResolver() aws.EndpointResolverFunc {
-    sqsEndpointURL := os.Getenv("SQS_ENDPOINT_URL")
-    s3EndpointURL := os.Getenv("S3_ENDPOINT_URL")
-    awsRegion := os.Getenv("AWS_REGION")
+// func createAWSEndpointResolver() aws.EndpointResolverFunc {
+//     sqsEndpointURL := os.Getenv("SQS_ENDPOINT_URL")
+//     s3EndpointURL := os.Getenv("S3_ENDPOINT_URL")
+//     awsRegion := os.Getenv("AWS_REGION")
 
-    if awsRegion == "" {
-        awsRegion = "eu-north-1" // Default region if not set
-    }
+//     if awsRegion == "" {
+//         awsRegion = "eu-north-1" // Default region if not set
+//     }
 
-    return func(service, region string) (aws.Endpoint, error) {
-        switch service {
-        case sqs.ServiceID:
-            if sqsEndpointURL != "" {
-                return aws.Endpoint{
-                    URL:           sqsEndpointURL,
-                    SigningRegion: awsRegion,
-                }, nil
-            }
-            // Fallback to AWS SQS regional endpoint
-            return aws.Endpoint{
-                URL:           fmt.Sprintf("https://sqs.%s.amazonaws.com", awsRegion),
-                SigningRegion: awsRegion,
-            }, nil
+//     return func(service, region string) (aws.Endpoint, error) {
+//         switch service {
+//         case sqs.ServiceID:
+//             if sqsEndpointURL != "" {
+//                 return aws.Endpoint{
+//                     URL:           sqsEndpointURL,
+//                     SigningRegion: awsRegion,
+//                 }, nil
+//             }
+//             // Fallback to AWS SQS regional endpoint
+//             return aws.Endpoint{
+//                 URL:           fmt.Sprintf("https://sqs.%s.amazonaws.com", awsRegion),
+//                 SigningRegion: awsRegion,
+//             }, nil
 
-        case s3.ServiceID:
-            if s3EndpointURL != "" {
-                // MinIO endpoint
-                return aws.Endpoint{
-                    URL:           s3EndpointURL,
-                    SigningRegion: awsRegion,
-                    HostnameImmutable: true, // Important for MinIO
-                }, nil
-            }
-            // AWS S3 regional endpoint
+//         case s3.ServiceID:
+//             if s3EndpointURL != "" {
+//                 // MinIO endpoint
+//                 return aws.Endpoint{
+//                     URL:           s3EndpointURL,
+//                     SigningRegion: awsRegion,
+//                     HostnameImmutable: true, // Important for MinIO
+//                 }, nil
+//             }
+//             // AWS S3 regional endpoint
 						
 
-            return aws.Endpoint{
-                URL:           fmt.Sprintf("https://%s.s3.%s.amazonaws.com", os.Getenv("BUCKET_NAME"), awsRegion),
-                SigningRegion: awsRegion,
-                HostnameImmutable: false,
-            }, nil
+//             return aws.Endpoint{
+//                 URL:           fmt.Sprintf("https://%s.s3.%s.amazonaws.com", os.Getenv("BUCKET_NAME"), awsRegion),
+//                 SigningRegion: awsRegion,
+//                 HostnameImmutable: false,
+//             }, nil
 
-        default:
-            return aws.Endpoint{}, &aws.EndpointNotFoundError{}
-        }
-    }
+//         default:
+//             return aws.Endpoint{}, &aws.EndpointNotFoundError{}
+//         }
+//     }
+// }
+
+
+// func createAWSEndpointResolver() aws.EndpointResolverWithOptionsFunc {
+// 	sqsEndpointURL := os.Getenv("SQS_ENDPOINT_URL")
+// 	s3EndpointURL := os.Getenv("S3_ENDPOINT_URL")
+// 	awsRegion := os.Getenv("AWS_REGION")
+
+// 	if awsRegion == "" {
+// 		awsRegion = "eu-north-1"
+// 	}
+
+// 	return func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+// 		switch service {
+// 		case sqs.ServiceID:
+// 			if sqsEndpointURL != "" {
+// 				return aws.Endpoint{
+// 					URL:               sqsEndpointURL,
+// 					SigningRegion:     awsRegion,
+// 					HostnameImmutable: true,
+// 				}, nil
+// 			}
+// 			return aws.Endpoint{
+// 				URL:           fmt.Sprintf("https://sqs.%s.amazonaws.com", awsRegion),
+// 				SigningRegion: awsRegion,
+// 			}, nil
+
+// 		case s3.ServiceID:
+// 			if s3EndpointURL != "" {
+// 				return aws.Endpoint{
+// 					URL:               s3EndpointURL,
+// 					SigningRegion:     awsRegion,
+// 					HostnameImmutable: true,
+// 				}, nil
+// 			}
+
+// 			bucketName := os.Getenv("BUCKET_NAME")
+// 			if bucketName == "" {
+// 				return aws.Endpoint{}, fmt.Errorf("BUCKET_NAME not set")
+// 			}
+// 			return aws.Endpoint{
+// 				URL:               fmt.Sprintf("https://%s.s3.%s.amazonaws.com", bucketName, awsRegion),
+// 				SigningRegion:     awsRegion,
+// 				HostnameImmutable: false,
+// 			}, nil
+
+// 		default:
+// 			return aws.Endpoint{}, &aws.EndpointNotFoundError{}
+// 		}
+// 	}
+// }
+
+func createAWSEndpointResolver() aws.EndpointResolverFunc {
+	sqsEndpointURL := os.Getenv("SQS_ENDPOINT_URL")
+     s3EndpointURL := os.Getenv("S3_ENDPOINT_URL")
+
+	return func(service, region string) (aws.Endpoint, error) {
+		if sqsEndpointURL != "" && service == sqs.ServiceID {
+			return aws.Endpoint{
+				URL: sqsEndpointURL,
+			}, nil
+		}
+
+		if s3EndpointURL != "" && service == s3.ServiceID {
+			return aws.Endpoint{
+				URL: s3EndpointURL,
+			}, nil
+
+		}
+
+		// Fallback to default endpoint
+		return aws.Endpoint{}, &aws.EndpointNotFoundError{}
+	}
 }
+
 
 // …
 
