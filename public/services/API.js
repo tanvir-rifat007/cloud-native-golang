@@ -1,5 +1,6 @@
 export const API = {
-  baseURL: "http://localhost:8080/api/v1",
+  baseURL:
+    "https://canvas.ds9pna0mr2jvt.eu-north-1.cs.amazonlightsail.com/api/v1",
 
   postNewsletter: async (body) => {
     return API.fetchData("/newsletter", body);

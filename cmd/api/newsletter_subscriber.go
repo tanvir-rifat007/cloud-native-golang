@@ -111,7 +111,7 @@ func (app *application) NewsletterConfirmation(w http.ResponseWriter, r *http.Re
 	}
 	
 
-	redirectURL := fmt.Sprintf("http://localhost:8080/activated?token=%s", tokenPlainText)
+	redirectURL := fmt.Sprintf("https://canvas.ds9pna0mr2jvt.eu-north-1.cs.amazonlightsail.com/activated?token=%s", tokenPlainText)
 http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 
 	
