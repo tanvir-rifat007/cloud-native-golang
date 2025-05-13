@@ -18,6 +18,9 @@ type Newsletter struct {
 	UpdatedAT time.Time
 	Tags    []string
 	CreatedBy int
+	FileURLs  []string 
+	Owner     string
+
 }
 
 
@@ -57,22 +60,41 @@ func (m NewsletterModel) Insert(title, body string, tags []string, createdBy int
 
 
 func (m NewsletterModel) GetNewsletter(id int) (*Newsletter, error) {
-	 stmt := `SELECT id,title,body,created_at,updated_at,tags,created_by FROM newsletters WHERE id = $1`
- ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
- defer cancel()
+	stmt := `
+		SELECT 
+			n.id, n.title, n.body, n.created_at, n.updated_at, n.tags, n.created_by,
+			COALESCE(array_agg(nf.file_url) FILTER (WHERE nf.file_url IS NOT NULL), '{}') AS file_urls
+		FROM newsletters n
+		LEFT JOIN newsletter_files nf ON n.id = nf.newsletter_id
+		WHERE n.id = $1
+		GROUP BY n.id
+	`
 
- var newsletter Newsletter
- err := m.DB.QueryRowContext(ctx, stmt, id).Scan(&newsletter.ID, &newsletter.Title, &newsletter.Body, &newsletter.CreatedAT, &newsletter.UpdatedAT,pq.Array(&newsletter.Tags), &newsletter.CreatedBy)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
- if err != nil {
-	if err == sql.ErrNoRows {
-		return nil, ErrRecordNotFound
+	var newsletter Newsletter
+	err := m.DB.QueryRowContext(ctx, stmt, id).Scan(
+		&newsletter.ID,
+		&newsletter.Title,
+		&newsletter.Body,
+		&newsletter.CreatedAT,
+		&newsletter.UpdatedAT,
+		pq.Array(&newsletter.Tags),
+		&newsletter.CreatedBy,
+		pq.Array(&newsletter.FileURLs), // aggregate result
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrRecordNotFound
+		}
+		return nil, err
 	}
-	return nil, err
- }
- return &newsletter, nil
 
+	return &newsletter, nil
 }
+
 
 func (m NewsletterModel) GetNewsletters()([]*Newsletter, error) {
 	 stmt := `SELECT id,title,body,created_at,updated_at FROM newsletters`
@@ -178,5 +200,17 @@ func ValidateNewsletter(v *validator.Validator, title, body string) {
 
 
 
+func (n NewsletterModel) InsertFile(newsletterID int, url string, filename string) error {
+	query := `
+		INSERT INTO newsletter_files (newsletter_id, file_url, filename)
+		VALUES ($1, $2, $3)
+	`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+ defer cancel()
+
+	_, err := n.DB.ExecContext(ctx,query, newsletterID, url, filename)
+	return err
+}
 
 

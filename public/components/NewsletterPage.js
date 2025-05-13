@@ -20,21 +20,32 @@ export class NewsletterPage extends HTMLElement {
 
     let newsletter = (await app.api.getNewsletter(id)).newsletter;
 
+    console.log("newsletter", newsletter);
+
     // style this using tailwind css
     const newsletterContainer = this.querySelector("#newsletter-container");
 
     newsletterContainer.innerHTML = `
     <div class="container mx-auto mt-10">
+      <img 
+        src="https://canvas-assetsbucket-mzmt07gci4uk.s3.eu-north-1.amazonaws.com/${
+          newsletter.FileURLs[0]
+        }"
+        alt="${newsletter.Title}"
+        class="rounded-2xl mb-4 w-full h-auto object-cover"
+      />
       <h3 class="text-xl font-semibold mb-2 text-white">${newsletter.Title}</h3>
+
       <p class="text-sm text-gray-300 mb-4">
-        created on : ${new Date(newsletter.CreatedAT).toLocaleDateString(
-          "en-US",
-          {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }
-        )} at ${new Date(newsletter.CreatedAT).toLocaleTimeString("en-US", {
+        created By : <span
+          class="text-white font-semibold"
+        >${app.store.createdBy}</span> at ${new Date(
+      newsletter.CreatedAT
+    ).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })} at ${new Date(newsletter.CreatedAT).toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
     })}

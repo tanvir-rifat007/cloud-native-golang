@@ -77,25 +77,42 @@ export class CreateNewsletter extends HTMLElement {
 
         const title = document.getElementById("title").value;
         const markdown = contentInput.value;
+        const fileInput = document.getElementById("file-upload");
+        const file = fileInput.files[0];
 
-        const payload = {
-          title,
-          body: markdown,
-          tags,
-          token: app.store.token ? app.store.token : null,
-        };
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("body", markdown);
+        formData.append("token", app.store.token || "");
+        tags.forEach((tag) => formData.append("tags", tag));
+        if (file) {
+          formData.append("file", file);
+        }
 
-        console.log(payload);
+        const response = await fetch("api/v1/newsletter/create", {
+          method: "POST",
+          body: formData,
+        });
 
-        const response = await API.fetchData("/newsletter/create", payload);
+        const data = await response.json();
 
-        console.log(response);
+        const newsletter = data.newsletter;
+
+        if (newsletter) {
+          app.store.createdBy = newsletter.Owner;
+        }
+
+        console.log("data", data);
+
+        // const response = await API.fetchData("/newsletter/create", payload);
+
+        // console.log(response);
 
         // removing error message
         const errorMessages = document.querySelectorAll(".error-message");
         errorMessages.forEach((el) => el.remove());
 
-        if (!response.error) {
+        if (!data.error) {
           const modal = document.getElementById("modal");
           const modalContent = document.getElementById("modal-content");
           const modalTitle = document.getElementById("modal-title");
@@ -123,12 +140,12 @@ export class CreateNewsletter extends HTMLElement {
 
           let message;
           if (
-            (response.error =
+            (data.error =
               "the server encountered a problem and could not process your request")
           ) {
             message = "You need to admin access to create a newsletter";
           } else {
-            message = response.error.title || response.error;
+            message = data.error.title || data.error;
           }
           const p = document.createElement("p");
           p.innerText = message;

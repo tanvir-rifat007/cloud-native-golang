@@ -46,6 +46,11 @@ func NewBlobStore(opts NewBlobStoreOptions) *BlobStore {
 	}
 }
 
+func (b *BlobStore) Bucket() string {
+	return b.bucket
+}
+
+
 // Put a blob in the bucket under key with the given contentType.
 func (b *BlobStore) Put(ctx context.Context, bucket, key, contentType string, blob io.Reader) error {
 	_, err := b.Client.PutObject(ctx, &s3.PutObjectInput{

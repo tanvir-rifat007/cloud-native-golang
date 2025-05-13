@@ -1,5 +1,6 @@
 const Store = {
   token: localStorage.getItem("token") || null,
+  createdBy: localStorage.getItem("createdBy") || null,
 };
 
 const proxiedStore = new Proxy(Store, {
@@ -7,6 +8,11 @@ const proxiedStore = new Proxy(Store, {
     if (prop === "token") {
       localStorage.setItem("token", value);
     }
+
+    if (prop === "createdBy") {
+      localStorage.setItem("createdBy", value);
+    }
+
     target[prop] = value;
     return true;
   },
