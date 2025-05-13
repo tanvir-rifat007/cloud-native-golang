@@ -26,7 +26,7 @@ export class SearchNewslettersPage extends HTMLElement {
       const newsletterItem = document.createElement("div");
 
       newsletterItem.innerHTML = `
-  <h3 class="text-xl font-semibold mb-2 text-white">No newsletters found</h3>
+  <h3 class="text-gray-300 text-center text-lg font-semibold mt-10">No newsletters found</h3>
       `;
       newslettersContainer.appendChild(newsletterItem);
 

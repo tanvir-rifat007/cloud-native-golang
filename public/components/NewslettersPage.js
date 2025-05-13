@@ -19,6 +19,14 @@ export class NewslettersPage extends HTMLElement {
     console.log(newsletters);
     const newslettersContainer = this.querySelector("#newsletters-container");
 
+    if (newsletters.length === 0) {
+      const noNewsletters = document.createElement("div");
+      noNewsletters.className =
+        "text-gray-300 text-center text-lg font-semibold mt-10";
+      noNewsletters.innerText = "No newsletters found";
+      newslettersContainer.appendChild(noNewsletters);
+    }
+
     newsletters.forEach((newsletter) => {
       const newsletterItem = document.createElement("div");
       // style this using tailwind css
