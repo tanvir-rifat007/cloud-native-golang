@@ -82,6 +82,7 @@ export class CreateNewsletter extends HTMLElement {
           title,
           body: markdown,
           tags,
+          token: app.store.token ? app.store.token : null,
         };
 
         console.log(payload);
@@ -120,7 +121,15 @@ export class CreateNewsletter extends HTMLElement {
 
           modal.showModal();
 
-          const message = response?.error?.email || response?.error || response;
+          let message;
+          if (
+            (response.error =
+              "the server encountered a problem and could not process your request")
+          ) {
+            message = "You need to admin access to create a newsletter";
+          } else {
+            message = response.error.title || response.error;
+          }
           const p = document.createElement("p");
           p.innerText = message;
 

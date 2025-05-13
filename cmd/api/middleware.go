@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -48,18 +47,18 @@ func (app *application) recoverPanic(next http.Handler) http.Handler {
 
 
 // for admin 
-func (app *application) requireAdmin(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		 user,_  := app.models.NewsletterSubscribers.GetAdminSubscriber()
+// func (app *application) requireAdmin(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		 user,_  := app.models.NewsletterSubscribers.GetAdminSubscriber()
 
-   fmt.Println("Admin??",user.IsAdmin)
+//    fmt.Println("Admin??",user.IsAdmin)
 
 
-		if !user.IsAdmin {
-			app.notFoundResponse(w, r)
-			return
-		}
-		next.ServeHTTP(w, r)
-	})
-}
+// 		if !user.IsAdmin {
+// 			app.notFoundResponse(w, r)
+// 			return
+// 		}
+// 		next.ServeHTTP(w, r)
+// 	})
+// }
 

@@ -4,6 +4,7 @@ import (
 	"canvas/internal/data"
 	"canvas/messaging"
 	"canvas/validator"
+	"fmt"
 	"net/http"
 )
 
@@ -13,13 +14,20 @@ func (app *application) createNewsletterHandler(w http.ResponseWriter, r *http.R
 		Title string `json:"title"`
 		Body  string `json:"body"`
 		Tags  []string `json:"tags"`
+		Token string `json:"token"`
 	}
+
+
 
 	err := app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
 	}
+
+	fmt.Println("input",input)
+
+
 
 	v := validator.New()
 	data.ValidateNewsletter(v, input.Title, input.Body)
@@ -28,7 +36,7 @@ func (app *application) createNewsletterHandler(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	adminSubscriber,err:=app.models.NewsletterSubscribers.GetAdminSubscriber()
+	adminSubscriber,err:=app.models.NewsletterSubscribers.GetAdminSubscriber(input.Token)
 
 	if err!=nil{
 		app.serverErrorResponse(w,r,err)

@@ -107,14 +107,14 @@ func (m NewsletterSubscriberModel) GetNewsletterSubscribers() ([]*Newsletter_Sub
 
 // get active and is_admin subscribers:
 
-func (m NewsletterSubscriberModel) GetAdminSubscriber()(Newsletter_Subscriber,error) {
-    stmt := `SELECT id,email,is_admin FROM newsletter_subscribers WHERE active = true and is_admin = true ORDER BY created_at LIMIT 1`
+func (m NewsletterSubscriberModel) GetAdminSubscriber(token string)(Newsletter_Subscriber,error) {
+    stmt := `SELECT id,email,is_admin FROM newsletter_subscribers WHERE active = true and is_admin = true and token = $1 ORDER BY created_at LIMIT 1`
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
 
     var subscriber Newsletter_Subscriber
 
-    err := m.DB.QueryRowContext(ctx, stmt).Scan(&subscriber.ID,&subscriber.Email,&subscriber.IsAdmin)
+    err := m.DB.QueryRowContext(ctx, stmt,token).Scan(&subscriber.ID,&subscriber.Email,&subscriber.IsAdmin)
 
     if err != nil {
         if err == sql.ErrNoRows {

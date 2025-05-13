@@ -30,7 +30,7 @@ mux.Post("/api/v1/newsletter", app.recoverPanic(app.Metrics()(http.HandlerFunc(a
 
 mux.Get("/api/v1/newsletter/confirmation", app.recoverPanic(app.Metrics()(http.HandlerFunc(app.NewsletterConfirmation))).ServeHTTP)
 
-mux.Post("/api/v1/newsletter/create", app.recoverPanic(app.Metrics()(app.requireAdmin(http.HandlerFunc(app.createNewsletterHandler)))).ServeHTTP)
+mux.Post("/api/v1/newsletter/create", app.recoverPanic(app.Metrics()(http.HandlerFunc(app.createNewsletterHandler))).ServeHTTP)
 
 mux.Get("/api/v1/newsletters", app.recoverPanic(app.Metrics()(http.HandlerFunc(app.getNewslettersHandler))).ServeHTTP)
 

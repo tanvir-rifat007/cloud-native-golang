@@ -1,5 +1,6 @@
 import { API } from "./services/API.js";
 import Router from "./services/Router.js";
+import proxiedStore from "./services/Store.js";
 
 globalThis.addEventListener("DOMContentLoaded", () => {
   app.router.init();
@@ -28,9 +29,10 @@ globalThis.app = {
     if (errorMessage) {
       errorMessage.remove();
     }
-    
 
     if (!res.error) {
+      app.store.token = res.token;
+
       const modalContent = document.getElementById("modal-content");
       const modalTitle = document.getElementById("modal-title");
 
@@ -132,4 +134,6 @@ globalThis.app = {
   closeModal: () => {
     document.querySelector("#modal").close();
   },
+
+  store: proxiedStore,
 };
